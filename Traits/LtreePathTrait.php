@@ -9,6 +9,31 @@
 namespace Slev\LtreeExtensionBundle\Traits;
 
 
+use Slev\LtreeExtensionBundle\Annotation\LtreePath;
+
 trait LtreePathTrait
 {
+    /**
+     * @var array
+     *
+     * @ORM\Column(type="ltree")
+     * @LtreePath()
+     */
+    protected $ltreePath=null;
+
+    /**
+     * @return array
+     */
+    public function getLtreePath()
+    {
+        return $this->ltreePath;
+    }
+
+    /**
+     * @param array $ltreePath
+     */
+    public function setLtreePath(array $ltreePath)
+    {
+        $this->ltreePath = $ltreePath;
+    }
 }

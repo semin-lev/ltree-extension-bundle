@@ -24,6 +24,14 @@ class AnnotationDriver implements AnnotationDriverInterface
     /**
      * {@inheritdoc}
      */
+    public function entityIsLtree($object)
+    {
+        return (bool)$this->getReader()->getClassAnnotation(new \ReflectionObject($object), self::ENTITY_ANNOTATION);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getChildsProperty($object)
     {
         return $this->findAnnotation($object, self::CHILDS_ANNOTATION);

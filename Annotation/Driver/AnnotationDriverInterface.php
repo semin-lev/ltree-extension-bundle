@@ -11,9 +11,18 @@ namespace Slev\LtreeExtensionBundle\Annotation\Driver;
 
 interface AnnotationDriverInterface
 {
+    const ENTITY_ANNOTATION = '\\Slev\\LtreeExtensionBundle\\Annotation\\LtreeEntity';
     const CHILDS_ANNOTATION = '\\Slev\\LtreeExtensionBundle\\Annotation\\LtreeChilds';
     const PARENT_ANNOTATION = '\\Slev\\LtreeExtensionBundle\\Annotation\\LtreeParent';
     const PATH_ANNOTATION = '\\Slev\\LtreeExtensionBundle\\Annotation\\LtreePath';
+
+    /**
+     * Check that ltree entity annotation is in the $object
+     *
+     * @param $object
+     * @return bool
+     */
+    public function entityIsLtree($object);
 
     /**
      * Return childs property reflection object

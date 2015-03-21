@@ -2,19 +2,20 @@
 /**
  * Created by PhpStorm.
  * User: levsemin
- * Date: 01.03.15
- * Time: 16:03
+ * Date: 21.03.15
+ * Time: 7:19
  */
 
 namespace Slev\LtreeExtensionBundle\Annotation;
 
 /**
- * Class LtreePath
+ * Class LtreeEntity
  * @package Slev\LtreeExtensionBundle\Annotation
  *
  * @Annotation
- * @Target("PROPERTY")
+ * @Target("CLASS")
  */
-class LtreePath
+class LtreeEntity
 {
+
 }
