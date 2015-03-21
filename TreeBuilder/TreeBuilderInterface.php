@@ -12,7 +12,7 @@ namespace Slev\LtreeExtensionBundle\TreeBuilder;
 interface TreeBuilderInterface
 {
     /**
-     * @param \Traversable|\Countable $list
+     * @param \Traversable|\Countable|array $list
      * @param string $pathName name of path property
      * @param null|string $parentPath path from parent entity
      * @param null|string $parentName parent property name

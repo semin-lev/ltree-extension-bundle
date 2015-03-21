@@ -12,7 +12,6 @@ namespace Slev\LtreeExtensionBundle\Repository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Query;
-use Gedmo\Mapping\Annotation\Tree;
 use Slev\LtreeExtensionBundle\Annotation\Driver\AnnotationDriverInterface;
 use Slev\LtreeExtensionBundle\TreeBuilder\TreeBuilderInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -158,6 +157,11 @@ class LtreeEntityRepository extends EntityRepository implements LtreeEntityRepos
             throw new \LogicException("If treeMode is true, hydration mode must be object or array");
         }
         if (!$treeMode) return $result;
+        $pathName = $this->getAnnotationDriver()->getPathProperty($entity)->getName();
+        $pathValue = $this->getPropertyAccessor()->getValue($entity, $pathName);
+        $parentName = $this->getAnnotationDriver()->getParentProperty($entity)->getName();
+        $childName = $this->getAnnotationDriver()->getChildsProperty($entity)->getName();
+        return $this->treeBuilder->buildTree($result, $pathName, $pathValue, $parentName, $childName);
     }
 
     /**
@@ -166,5 +170,22 @@ class LtreeEntityRepository extends EntityRepository implements LtreeEntityRepos
     public function moveNode($entity, $to)
     {
         $this->checkClass($entity);
+        $this->checkClass($to);
+
+        $aliasName = 'ltree_entity';
+        $pathName = $this->getAnnotationDriver()->getPathProperty($entity)->getName();
+        $oldPathValue = $this->getPropertyAccessor()->getValue($entity, $pathName);
+        $newPathValue = $this->getPropertyAccessor()->getValue($to, $pathName);
+
+        $qb = $this->createQueryBuilder($aliasName)
+            ->update()
+            ->set(sprintf("%s.%s", $aliasName, $pathName), ":new_path || subpath(l, nlevel(:self_path)-1)")
+            ->where(sprintf("%s.%s<@:self_path", $aliasName, $pathName))
+        ;
+
+        return $qb->getQuery()->execute(array(
+            'self_path'=>$oldPathValue,
+            'new_path'=>$newPathValue
+        ));
     }
 }
