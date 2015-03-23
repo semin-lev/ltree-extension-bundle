@@ -80,7 +80,7 @@ class LtreeSubscriber implements EventSubscriber
     /**
      * @{@inheritdoc}
      */
-    public static function getSubscribedEvents()
+    public function getSubscribedEvents()
     {
         return array(
             'preUpdate',
