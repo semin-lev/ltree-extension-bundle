@@ -2,6 +2,12 @@ services:
 #    slev_ltree_extension.example:
 #        class: Slev\LtreeExtensionBundle\Example
 #        arguments: [@service_id, "plain_value", %parameter%]
+    slev_ltreeextensionbundle.listener.ltreesubscriber:
+        class: Slev\LtreeExtensionBundle\Listener\LtreeSubscriber
+        arguments: [ @slev_ltreeextensionbundle.annotation.annotation_driver, @property_accessor ]
+        tags:
+            -{ name: doctrine.event_subscriber }
+
     slev_ltreeextensionbundle.annotation.annotation_driver:
         class: Slev\LtreeExtensionBundle\Annotation\Driver\AnnotationDriver
         arguments: [ @annotation_reader ]

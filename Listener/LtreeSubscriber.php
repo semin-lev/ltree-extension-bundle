@@ -8,15 +8,15 @@
 
 namespace Slev\LtreeExtensionBundle\Listener;
 
+use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Slev\LtreeExtensionBundle\Annotation\Driver\AnnotationDriverInterface;
 use Slev\LtreeExtensionBundle\Repository\LtreeEntityRepositoryInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
-class LtreeSubscriber implements EventSubscriberInterface
+class LtreeSubscriber implements EventSubscriber
 {
     protected $annotationDriver;
     protected $propertyAccessor;
