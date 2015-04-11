@@ -72,7 +72,7 @@ class AnnotationDriver implements AnnotationDriverInterface
         $reflObject = new \ReflectionObject($object);
         foreach($reflObject->getProperties() as $property){
             $result = $this->getReader()->getPropertyAnnotation($property, $annotationName);
-            if ($result) return $result;
+            if ($result) return $property;
         }
         throw new PropertyNotFoundException($object, $annotationName);
     }

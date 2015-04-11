@@ -6,7 +6,7 @@ services:
         class: Slev\LtreeExtensionBundle\Listener\LtreeSubscriber
         arguments: [ @slev_ltreeextensionbundle.annotation.annotation_driver, @property_accessor ]
         tags:
-            -{ name: doctrine.event_subscriber }
+            - { name: doctrine.event_subscriber }
 
     slev_ltreeextensionbundle.annotation.annotation_driver:
         class: Slev\LtreeExtensionBundle\Annotation\Driver\AnnotationDriver

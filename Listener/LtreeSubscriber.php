@@ -29,17 +29,27 @@ class LtreeSubscriber implements EventSubscriber
 
     protected function buildPath($entity, ClassMetadata $classMetadata)
     {
-        $pathName = $this->annotationDriver->getPathProperty($entity);
-        $parentName = $this->annotationDriver->getParentProperty($entity);
+        $pathName = $this->annotationDriver->getPathProperty($entity)->getName();
+        $parentName = $this->annotationDriver->getParentProperty($entity)->getName();
 
         $parent = $this->propertyAccessor->getValue($entity, $parentName);
-        $idValue = reset($classMetadata->getIdentifierValues($entity));
+        $identifiers = $classMetadata->getIdentifierValues($entity);
+        $idValue = reset($identifiers);
 
         if (!$idValue){
             throw new \LogicException("Can't build path property without id");
         }
-
-        $pathValue = $parent ? $this->propertyAccessor->getValue($parent, $pathName) : array();
+        $pathValue = array();
+        if ($parent){
+            $pathValue = $this->propertyAccessor->getValue($parent, $pathName);
+            if (!$pathValue || empty($pathValue)){
+                $this->buildPath($parent, $classMetadata);
+                $pathValue = $this->propertyAccessor->getValue($parent, $pathName);
+            }
+            if (!$pathValue || empty($pathValue)){
+                throw new \ErrorException("Unable to build parent path property");
+            }
+        }
         if (!is_array($pathValue)){
             $this->buildPath($parent, $classMetadata);
             $pathValue = $this->propertyAccessor->getValue($parent, $pathName);
@@ -53,7 +63,7 @@ class LtreeSubscriber implements EventSubscriber
         $entity = $args->getEntity();
         if (!$this->annotationDriver->entityIsLtree($entity)) return;
 
-        $parentPath = $this->annotationDriver->getParentProperty($entity);
+        $parentPath = $this->annotationDriver->getParentProperty($entity)->getName();
         if (!$args->hasChangedField($parentPath)) return;
 
         $repo = $args->getEntityManager()->getRepository(get_class($entity));
@@ -73,7 +83,7 @@ class LtreeSubscriber implements EventSubscriber
             if (!$this->annotationDriver->entityIsLtree($entity)) continue;
             $classMetadata = $em->getClassMetadata(get_class($entity));
             $this->buildPath($entity, $classMetadata);
-            $uow->computeChangeSet($classMetadata, $entity);
+            $uow->recomputeSingleEntityChangeSet($classMetadata, $entity);
         }
     }
 

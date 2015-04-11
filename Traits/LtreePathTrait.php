@@ -10,13 +10,14 @@ namespace Slev\LtreeExtensionBundle\Traits;
 
 
 use Slev\LtreeExtensionBundle\Annotation\LtreePath;
+use Doctrine\ORM\Mapping\Column;
 
 trait LtreePathTrait
 {
     /**
      * @var array
      *
-     * @ORM\Column(type="ltree")
+     * @Column(type="ltree")
      * @LtreePath()
      */
     protected $ltreePath=null;
