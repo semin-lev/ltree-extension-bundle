@@ -30,7 +30,7 @@ class TestCommand extends ContainerAwareCommand
     protected function getChildren()
     {
         $em = $this->getContainer()->get('doctrine.orm.entity_manager');
-        $child = $em->find("SlevLtreeExtensionBundle:TestEntity", 1552);
+        $child = $em->find("SlevLtreeExtensionBundle:TestEntity", 1);
 
         var_dump($em->getRepository("SlevLtreeExtensionBundle:TestEntity")->getAllChildren($child, true, Query::HYDRATE_ARRAY));
     }
@@ -47,8 +47,8 @@ class TestCommand extends ContainerAwareCommand
     {
         $em = $this->getContainer()->get('doctrine.orm.entity_manager');
 
-        $root = $em->find("SlevLtreeExtensionBundle:TestEntity", 1547);
-        $child = $em->find("SlevLtreeExtensionBundle:TestEntity", 1548);
+        $root = $em->find("SlevLtreeExtensionBundle:TestEntity", 18);
+        $child = $em->find("SlevLtreeExtensionBundle:TestEntity", 11);
 
         $root->addChild($child);
 

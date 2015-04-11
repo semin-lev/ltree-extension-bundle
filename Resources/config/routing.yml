@@ -1,3 +1,0 @@
-slev_ltree_extension_homepage:
-    path:     /hello/{name}
-    defaults: { _controller: SlevLtreeExtensionBundle:Default:index }

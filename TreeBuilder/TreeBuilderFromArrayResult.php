@@ -26,7 +26,7 @@ class TreeBuilderFromArrayResult implements TreeBuilderInterface
             }
             $key = array_shift($path);
             if (!isset($nodeList[$key])) return false;
-            $element = $nodeList[$key];
+            $element = &$nodeList[$key];
             if (!is_array($element)){
                 throw new \InvalidArgumentException("All result values must be instance of array");
             }
@@ -43,6 +43,9 @@ class TreeBuilderFromArrayResult implements TreeBuilderInterface
                 if ($pathFinder($path, $nodeList, $item)){
                     $forUnset[]=$key;
                 }
+            }
+            foreach ($forUnset as $key){
+                unset($list[$key]);
             }
             if (count($forUnset)==0){
                 throw new \LogicException("Impossible to build tree, not all elements have parent node");
