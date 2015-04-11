@@ -9,6 +9,7 @@
 namespace Slev\LtreeExtensionBundle\Command;
 
 
+use Doctrine\ORM\Query;
 use Slev\LtreeExtensionBundle\Entity\TestEntity;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -23,14 +24,30 @@ class TestCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->moveNode();
+        $this->getChildren();
+    }
+
+    protected function getChildren()
+    {
+        $em = $this->getContainer()->get('doctrine.orm.entity_manager');
+        $child = $em->find("SlevLtreeExtensionBundle:TestEntity", 1552);
+
+        var_dump($em->getRepository("SlevLtreeExtensionBundle:TestEntity")->getAllChildren($child, true, Query::HYDRATE_ARRAY));
+    }
+
+    protected function getParent()
+    {
+        $em = $this->getContainer()->get('doctrine.orm.entity_manager');
+        $child = $em->find("SlevLtreeExtensionBundle:TestEntity", 1548);
+
+        var_dump($em->getRepository("SlevLtreeExtensionBundle:TestEntity")->getAllParent($child, Query::HYDRATE_ARRAY));
     }
 
     protected function moveNode()
     {
         $em = $this->getContainer()->get('doctrine.orm.entity_manager');
 
-        $root = $em->find("SlevLtreeExtensionBundle:TestEntity", 1552);
+        $root = $em->find("SlevLtreeExtensionBundle:TestEntity", 1547);
         $child = $em->find("SlevLtreeExtensionBundle:TestEntity", 1548);
 
         $root->addChild($child);

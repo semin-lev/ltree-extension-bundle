@@ -27,7 +27,7 @@ class TreeBuilderFromArrayResult implements TreeBuilderInterface
             $key = array_shift($path);
             if (!isset($nodeList[$key])) return false;
             $element = $nodeList[$key];
-            if ($element){
+            if (!is_array($element)){
                 throw new \InvalidArgumentException("All result values must be instance of array");
             }
             if (!isset($element[self::CHILD_KEY])){
@@ -39,7 +39,7 @@ class TreeBuilderFromArrayResult implements TreeBuilderInterface
         while (count($list)>0) {
             $forUnset = array();
             foreach ($list as $key=>$item) {
-                $path = explode(".", str_replace($parentPath, "", $item[$pathName]));
+                $path = array_diff($item[$pathName], $parentPath);
                 if ($pathFinder($path, $nodeList, $item)){
                     $forUnset[]=$key;
                 }

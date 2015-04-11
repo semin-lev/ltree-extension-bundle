@@ -114,7 +114,7 @@ class LtreeEntityRepository extends EntityRepository implements LtreeEntityRepos
         $qb->where(sprintf("ltree_operator(%s.%s, '@>', :self_path)=true", $aliasName, $pathName));
         $qb->andWhere(sprintf("%s.%s<>:self_path", $aliasName, $pathName));
         $qb->orderBy(sprintf("%s.%s", $aliasName, $pathName), 'DESC');
-        $qb->setParameter('self_path', $pathValue);
+        $qb->setParameter('self_path', $pathValue, 'ltree');
 
         return $qb;
     }
@@ -135,7 +135,7 @@ class LtreeEntityRepository extends EntityRepository implements LtreeEntityRepos
         $qb->where(sprintf("ltree_operator(%s.%s, '<@', :self_path)=true", $aliasName, $pathName));
         $qb->andWhere(sprintf("%s.%s<>:self_path", $aliasName, $pathName));
         $qb->orderBy($orderFieldName);
-        $qb->setParameter('self_path', $pathValue);
+        $qb->setParameter('self_path', $pathValue, 'ltree');
 
         return $qb;
     }

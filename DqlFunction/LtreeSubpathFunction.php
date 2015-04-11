@@ -18,6 +18,7 @@ class LtreeSubpathFunction extends FunctionNode
 {
     protected $first;
     protected $second;
+    protected $third;
 
     /**
      * @param SqlWalker $sqlWalker
@@ -26,7 +27,14 @@ class LtreeSubpathFunction extends FunctionNode
      */
     public function getSql(SqlWalker $sqlWalker)
     {
-        return sprintf("subpath(%s, %s)", $this->first->dispatch($sqlWalker), $this->second->dispatch($sqlWalker));
+        return $this->third == null ?
+            sprintf("subpath(%s, %s)", $this->first->dispatch($sqlWalker), $this->second->dispatch($sqlWalker)) :
+            sprintf(
+                "subpath(%s, %s, %s)",
+                $this->first->dispatch($sqlWalker),
+                $this->second->dispatch($sqlWalker),
+                $this->third->dispatch($sqlWalker)
+            );
     }
 
     /**
@@ -41,6 +49,11 @@ class LtreeSubpathFunction extends FunctionNode
         $this->first = $parser->ArithmeticPrimary();
         $parser->match(Lexer::T_COMMA);
         $this->second = $parser->ArithmeticPrimary();
+        // parse third parameter if available
+        if(Lexer::T_COMMA === $parser->getLexer()->lookahead['type']){
+            $parser->match(Lexer::T_COMMA);
+            $this->third = $parser->ScalarExpression();
+        }
         $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }
 }
