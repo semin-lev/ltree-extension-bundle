@@ -8,7 +8,6 @@
 
 namespace Slev\LtreeExtensionBundle\Repository;
 
-
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Query;
@@ -112,7 +111,7 @@ class LtreeEntityRepository extends EntityRepository implements LtreeEntityRepos
         $pathValue = $this->getPropertyAccessor()->getValue($entity, $pathName);
 
         $qb = $this->createQueryBuilder($aliasName);
-        $qb->where(sprintf("%s.%s@>:self_path", $aliasName, $pathName));
+        $qb->where(sprintf("ltree_operator(%s.%s, '@>', :self_path)=true", $aliasName, $pathName));
         $qb->andWhere(sprintf("%s.%s<>:self_path", $aliasName, $pathName));
         $qb->orderBy(sprintf("%s.%s", $aliasName, $pathName), 'DESC');
         $qb->setParameter('self_path', $pathValue);
@@ -132,8 +131,8 @@ class LtreeEntityRepository extends EntityRepository implements LtreeEntityRepos
         $orderFieldName = 'parent_paths_for_order';
 
         $qb = $this->createQueryBuilder($aliasName);
-        $qb->addSelect(sprintf("subpath(%s.%s, 0, -1) as HIDDEN %s", $aliasName, $pathName, $orderFieldName));
-        $qb->where(sprintf("%s.%s<@:self_path", $aliasName, $pathName));
+        $qb->addSelect(sprintf("ltree_subpath(%s.%s, 0, -1) as HIDDEN %s", $aliasName, $pathName, $orderFieldName));
+        $qb->where(sprintf("ltree_operator(%s.%s, '<@', :self_path)=true", $aliasName, $pathName));
         $qb->andWhere(sprintf("%s.%s<>:self_path", $aliasName, $pathName));
         $qb->orderBy($orderFieldName);
         $qb->setParameter('self_path', $pathValue);
@@ -180,15 +179,23 @@ class LtreeEntityRepository extends EntityRepository implements LtreeEntityRepos
         $oldPathValue = $this->getPropertyAccessor()->getValue($entity, $pathName);
         $newPathValue = $this->getPropertyAccessor()->getValue($to, $pathName);
 
+        $prepareString=function($str) use ($aliasName, $pathName){
+            $replacement = ['%alias%'=>$aliasName, '%path%'=>$pathName];
+            return str_replace(array_keys($replacement), array_values($replacement), $str);
+        };
+
+
         $qb = $this->createQueryBuilder($aliasName)
             ->update()
-            ->set(sprintf("%s.%s", $aliasName, $pathName), ":new_path || subpath(l, nlevel(:self_path)-1)")
-            ->where(sprintf("%s.%s<@:self_path", $aliasName, $pathName))
+            ->set(
+                $prepareString("%alias%.%path%"),
+                $prepareString("ltree_concat(:new_path, ltree_subpath(%alias%.%path%, (ltree_nlevel(:self_path)-1)))")
+            )
+            ->where($prepareString("ltree_operator(%alias%.%path%, '<@', :self_path)=true"))
+            ->setParameter(':self_path', $oldPathValue, 'ltree')
+            ->setParameter(':new_path', $newPathValue, 'ltree')
         ;
 
-        return $qb->getQuery()->execute(array(
-            'self_path'=>$oldPathValue,
-            'new_path'=>$newPathValue
-        ));
+        return $qb->getQuery()->execute();
     }
 }
