@@ -37,4 +37,14 @@ trait LtreePathTrait
     {
         $this->ltreePath = $ltreePath;
     }
+
+    /**
+     * Level number
+     *
+     * @return int
+     */
+    public function getLevelNumber()
+    {
+        return count($this->getLtreePath());
+    }
 }
