@@ -10,13 +10,19 @@ namespace Slev\LtreeExtensionBundle\Repository;
 
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Slev\LtreeExtensionBundle\Annotation\Driver\AnnotationDriverInterface;
 use Slev\LtreeExtensionBundle\TreeBuilder\TreeBuilderInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
-class RepositoryFactory extends DefaultRepositoryFactory
+class RepositoryFactory implements \Doctrine\ORM\Repository\RepositoryFactory
 {
+    /**
+     * The list of EntityRepository instances.
+     *
+     * @var array<\Doctrine\Common\Persistence\ObjectRepository>
+     */
+    protected $repositoryList = array();
+
     /**
      * @var AnnotationDriverInterface
      */
@@ -40,10 +46,43 @@ class RepositoryFactory extends DefaultRepositoryFactory
         $this->treeBuilder = $treeBuilder;
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function getRepository(EntityManagerInterface $entityManager, $entityName)
+    {
+        $entityName = ltrim($entityName, '\\');
 
+        if (isset($this->repositoryList[$entityName])) {
+            return $this->repositoryList[$entityName];
+        }
+
+        $repository = $this->createRepository($entityManager, $entityName);
+
+        $this->repositoryList[$entityName] = $repository;
+
+        return $repository;
+    }
+
+    /**
+     * Create a new repository instance for an entity class.
+     *
+     * @param \Doctrine\ORM\EntityManagerInterface $entityManager The EntityManager instance.
+     * @param string                               $entityName    The name of the entity.
+     *
+     * @return \Doctrine\Common\Persistence\ObjectRepository
+     */
     protected function createRepository(EntityManagerInterface $entityManager, $entityName)
     {
-        $repo = parent::createRepository($entityManager, $entityName);
+        $metadata            = $entityManager->getClassMetadata($entityName);
+        $repositoryClassName = $metadata->customRepositoryClassName;
+
+        if ($repositoryClassName === null) {
+            $configuration       = $entityManager->getConfiguration();
+            $repositoryClassName = $configuration->getDefaultRepositoryClassName();
+        }
+
+        $repo = new $repositoryClassName($entityManager, $metadata);
         if ($repo instanceof LtreeEntityRepositoryInterface){
             $repo->setAnnotationDriver($this->annotationDriver);
             $repo->setPropertyAccessor($this->propertyAccessor);
