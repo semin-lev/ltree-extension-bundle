@@ -25,6 +25,14 @@ interface AnnotationDriverInterface
     public function entityIsLtree($object);
 
     /**
+     * Check that ltree entity annotation is in the $className
+     *
+     * @param $className
+     * @return bool
+     */
+    public function classIsLtree($className);
+
+    /**
      * Return childs property reflection object
      *
      * @param $object

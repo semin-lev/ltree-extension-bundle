@@ -95,7 +95,7 @@ class LtreeEntityRepository extends EntityRepository implements LtreeEntityRepos
         if (!is_a($entity, $this->getClassName())){
             throw new \InvalidArgumentException(sprintf('Entity must be instance of %s', $this->getClassName()));
         }
-        if (!$this->getAnnotationDriver()->entityIsLtree($entity)){
+        if (!$this->getAnnotationDriver()->classIsLtree($this->getClassName())){
             throw new \InvalidArgumentException("Entity must have ltree entity annotation");
         }
     }
