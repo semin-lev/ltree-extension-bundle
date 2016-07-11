@@ -4,13 +4,13 @@ services:
 #        arguments: [@service_id, "plain_value", %parameter%]
     slev_ltreeextensionbundle.listener.ltreesubscriber:
         class: Slev\LtreeExtensionBundle\Listener\LtreeSubscriber
-        arguments: [ @slev_ltreeextensionbundle.annotation.annotation_driver, @property_accessor ]
+        arguments: [ "@slev_ltreeextensionbundle.annotation.annotation_driver", "@property_accessor" ]
         tags:
             - { name: doctrine.event_subscriber }
 
     slev_ltreeextensionbundle.annotation.annotation_driver:
         class: Slev\LtreeExtensionBundle\Annotation\Driver\AnnotationDriver
-        arguments: [ @annotation_reader ]
+        arguments: [ "@annotation_reader" ]
 
     slev_ltreeextensionbundle.treebuilder.treebuilderfromarrayresult:
         class: Slev\LtreeExtensionBundle\TreeBuilder\TreeBuilderFromArrayResult
@@ -18,13 +18,13 @@ services:
 
     slev_ltreeextensionbundle.treebuilder.treebuilderfromobjectresult:
         class: Slev\LtreeExtensionBundle\TreeBuilder\TreeBuilderFromObjectResult
-        arguments: [ @property_accessor ]
+        arguments: [ "@property_accessor" ]
         public: false
 
     slev_ltreeextensionbundle.treebuilder.treebuilder:
         class: Slev\LtreeExtensionBundle\TreeBuilder\TreeBuilder
-        arguments: [ @slev_ltreeextensionbundle.treebuilder.treebuilderfromarrayresult, @slev_ltreeextensionbundle.treebuilder.treebuilderfromobjectresult ]
+        arguments: [ "@slev_ltreeextensionbundle.treebuilder.treebuilderfromarrayresult", "@slev_ltreeextensionbundle.treebuilder.treebuilderfromobjectresult" ]
 
     slev_ltreeextensionbundle.repository_factory:
         class: Slev\LtreeExtensionBundle\Repository\RepositoryFactory
-        arguments: [ @slev_ltreeextensionbundle.annotation.annotation_driver, @property_accessor, @slev_ltreeextensionbundle.treebuilder.treebuilder ]
+        arguments: [ "@slev_ltreeextensionbundle.annotation.annotation_driver", "@property_accessor", "@slev_ltreeextensionbundle.treebuilder.treebuilder" ]
